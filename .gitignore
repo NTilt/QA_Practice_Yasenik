@@ -1,3 +1,5 @@
 .idea
 target
 main_test.iml
+/src/main/resources/
+/build/
