@@ -1,26 +1,18 @@
 package org.example.main_test;
 
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
 import com.google.common.io.Resources;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
 
-import static com.codeborne.selenide.Selenide.*;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import javax.swing.*;
 import java.time.Duration;
 import java.util.List;
 
@@ -48,10 +40,7 @@ public class CitilinkTest {
         driver.findElement(By.name("name")).click();
         driver.findElement(By.xpath(".//input[@class=' InputBox__input js--InputBox__input js--SignUp__input-phone SignUp__input-phone__container-input']")).sendKeys("+79666666666");
         wait.until(ExpectedConditions.elementToBeClickable(By.xpath(".//input[@class=' InputBox__input js--InputBox__input js--SignUp__input-phone SignUp__input-phone__container-input']")));
-        //driver.findElement(By.xpath(".//input[@class=' InputBox__input js--InputBox__input  js--SignUp__input-email__container-input']")).sendKeys("ui_test@mail.ru");
-        //driver.findElement(By.name("password")).sendKeys("qweety123");
-        Assert.assertFalse(driver.findElement(By.xpath(".//input[@class=' InputBox__input js--InputBox__input js--SignUp__input-phone SignUp__input-phone__container-input']")).isEnabled());
-        //Assert.assertFalse(driver.findElement(By.xpath(".//button[@type='submit']")).isEnabled());
+        Assert.assertTrue(driver.findElement(By.xpath(".//button[@type='submit']")).isEnabled());
     }
     @Test
     public void CheckTultip() {
@@ -86,14 +75,13 @@ public class CitilinkTest {
         List <WebElement> array = driver.findElements(By.xpath(".//div[@class='product_data__gtm-js product_data__pageevents-js ProductCardHorizontal js--ProductCardInListing js--ProductCardInWishlist']"));
         int cnt = 0;
         int check = 0;
-        for (int i = 0; i < array.size(); i++) {
-            String s = array.get(i).getText();
+        for (WebElement webElement : array) {
+            String s = webElement.getText();
             String[] arr_s = s.split("\\r?\\n");
             String price = arr_s[arr_s.length - 1];
-            if (price.equals("Узнать о поступлении")){
+            if (price.equals("Узнать о поступлении")) {
                 cnt += 1;
-            }
-            else {
+            } else {
                 int pr = PriceToInt(price);
                 if (pr <= 17500 && pr >= 16500) {
                     check += 1;
