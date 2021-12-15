@@ -11,6 +11,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
@@ -18,61 +19,58 @@ import java.util.List;
 
 
 public class CitilinkTest {
+    WebDriver driver;
+    WebDriverWait wait;
+
+    @BeforeMethod
+    public void get_driver() {
+        System.setProperty("webdriver.chrome.driver", Resources.getResource("chromedriver").getPath());
+        driver = new ChromeDriver();
+        wait = new WebDriverWait(driver,
+                Duration.ofSeconds(5).toMillis());
+        driver.get("https://www.citilink.ru");
+    }
+
     @Test
     public void login() {
-        System.setProperty("webdriver.chrome.driver", Resources.getResource("chromedriver").getPath());
-        WebDriver driver = new ChromeDriver();
-        driver.get("https://www.citilink.ru");
         driver.findElement(By.xpath(".//div[@class='HeaderMenu__buttons  HeaderMenu__buttons_user']")).click();
         driver.findElement(By.name("login")).sendKeys("test_true");
         driver.findElement(By.name("pass")).sendKeys("123456789");
     }
+
     @Test
     public void register() {
-        System.setProperty("webdriver.chrome.driver", Resources.getResource("chromedriver").getPath());
-        WebDriver driver = new ChromeDriver();
-        WebDriverWait wait = new WebDriverWait(driver,
-                Duration.ofSeconds(5).toMillis());
-        driver.get("https://www.citilink.ru");
         driver.findElement(By.xpath(".//div[@class='HeaderMenu__buttons  HeaderMenu__buttons_user']")).click();
         driver.findElement(By.xpath(".//span[@class='AuthGroup__tab-sign-up js--AuthGroup__tab-sign-up']")).click();
-        driver.findElement(By.name("name")).sendKeys("Nikita");
-        driver.findElement(By.name("name")).click();
-        driver.findElement(By.xpath(".//input[@class=' InputBox__input js--InputBox__input js--SignUp__input-phone SignUp__input-phone__container-input']")).sendKeys("+79666666666");
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(".//input[@class=' InputBox__input js--InputBox__input js--SignUp__input-phone SignUp__input-phone__container-input']")));
+        WebElement name = driver.findElement(By.name("name"));
+        name.sendKeys("Nikita");
+        name.click();
+        driver.findElement(By.xpath("//*[@class='SignUp__phone js--SignUp__phone']/div[1]/label[1]/input[1]")).sendKeys("+79666666666");
         Assert.assertTrue(driver.findElement(By.xpath(".//button[@type='submit']")).isEnabled());
     }
     @Test
     public void CheckTultip() {
-        System.setProperty("webdriver.chrome.driver", Resources.getResource("chromedriver").getPath());
-        WebDriver driver = new ChromeDriver();
-        WebDriverWait wait = new WebDriverWait(driver,
-                Duration.ofSeconds(5).toMillis());
-        driver.get("https://www.citilink.ru");
-        driver.findElement(By.xpath("/html/body/div[2]/div[2]/header/div[2]/div[2]/div[1]/div/div/form/div/div[1]/div/label/input")).click();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id='header-instant-search']/div/div/div/div/div/div[2]/div[1]/div/div[2]/a[1]/div")));
-        WebElement tultip = driver.findElement(By.xpath("//*[@id='header-instant-search']/div/div/div/div/div/div[2]/div[1]/div/div[2]/a[1]/div"));
+        driver.findElement(By.xpath(".//div[@class='MainHeader__search']")).click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(".//a[@title='Ноутбуки']")));
+        WebElement tultip = driver.findElement(By.xpath(".//a[@title='Ноутбуки']"));
         Actions action = new Actions(driver);
         action.moveToElement(tultip).build().perform();
         Assert.assertEquals(tultip.getText(),"Ноутбуки");
     }
     @Test
     public void SortTest() {
-        System.setProperty("webdriver.chrome.driver", Resources.getResource("chromedriver").getPath());
-        WebDriver driver = new ChromeDriver();
-        WebDriverWait wait = new WebDriverWait(driver,
-                Duration.ofSeconds(5).toMillis());
-        driver.get("https://www.citilink.ru");
         driver.findElement(By.xpath(".//button[@data-label='Каталог товаров']")).click();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(".//div[@data-title='Смартфоны']")));
         driver.findElement(By.xpath(".//div[@data-title='Смартфоны']")).click();
-        driver.findElement(By.xpath("//*[@id='app-filter']/div/div/div[2]/div[2]/div/div[3]/div[2]/div[2]/input[1]")).clear();
-        driver.findElement(By.xpath("//*[@id='app-filter']/div/div/div[2]/div[2]/div/div[3]/div[2]/div[2]/input[1]")).sendKeys("16500");
-        driver.findElement(By.xpath("//*[@id='app-filter']/div/div/div[2]/div[2]/div/div[3]/div[2]/div[2]/input[2]")).clear();
-        driver.findElement(By.xpath("//*[@id='app-filter']/div/div/div[2]/div[2]/div/div[3]/div[2]/div[2]/input[2]")).sendKeys("17500");
-        driver.findElement(By.xpath("//*[@id='app-filter']/div/div/div[2]/div[2]/div/div[3]/div[2]/div[2]/input[2]")).sendKeys(Keys.ENTER);
+        WebElement min_cost = driver.findElement(By.xpath("//*[@data-meta-name='FilterListGroupsLayout']/div[2]/div[2]/input[1]"));
+        min_cost.clear();
+        min_cost.sendKeys("16500");
+        WebElement max_cost = driver.findElement(By.xpath("//*[@data-meta-name='FilterListGroupsLayout']/div[2]/div[2]/input[2]"));
+        max_cost.clear();
+        max_cost.sendKeys("17500");
+        max_cost.sendKeys(Keys.ENTER);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(".//*[text()='от 16 500 ₽ до 17 500 ₽']")));
-        List <WebElement> array = driver.findElements(By.xpath(".//div[@class='product_data__gtm-js product_data__pageevents-js ProductCardHorizontal js--ProductCardInListing js--ProductCardInWishlist']"));
+        List <WebElement> array = driver.findElements(By.xpath("//*[@class='ProductCardCategoryList__list']"));
         int cnt = 0;
         int check = 0;
         for (WebElement webElement : array) {
